@@ -3,117 +3,176 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>VKU Task Manager</title>
+  <title>VKU Task Manager | Group 17</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f1f5f9;
-      padding: 30px;
-    }
-    .container {
-      max-width: 550px;
-      margin: 40px auto;
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px #ddd;
-    }
-    h1 { color: #2563eb; }
-    .form { display: flex; gap: 10px; }
-    input { flex: 1; padding: 10px; min-width: 0; }
-    button {
-      padding: 10px;
-      cursor: pointer;
-      border: 0;
-      border-radius: 6px;
-      background: #2563eb;
-      color: white;
-    }
-    li {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      padding: 12px;
-      border-bottom: 1px solid #ddd;
-    }
-    .done { text-decoration: line-through; color: gray; }
+    :root{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;color:#18243d;background:#f4f7fc}
+    *{box-sizing:border-box}body{margin:0}button,input{font:inherit}button{cursor:pointer}
+    .layout{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:100vh}
+    aside{background:#111d3a;color:white;padding:32px 22px;display:flex;flex-direction:column;gap:35px}
+    .brand{font-size:23px;font-weight:800;letter-spacing:.3px}.brand span{color:#7aa9ff}
+    .nav{padding:14px 16px;background:#26385c;border-radius:12px;font-weight:600}
+    .aside-foot{margin-top:auto;color:#aebddd;font-size:13px;line-height:1.7}
+    main{max-width:1150px;width:100%;margin:0 auto;padding:42px 44px}
+    .topline{color:#66738d;font-size:14px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+    h1{font-size:clamp(28px,4vw,40px);margin:9px 0 8px;letter-spacing:-.04em}
+    .subtitle{color:#71809a;margin:0 0 30px}
+    .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-bottom:24px}
+    .stat,.panel{background:white;border:1px solid #e6ebf4;border-radius:20px;box-shadow:0 8px 26px rgba(26,48,91,.045)}
+    .stat{padding:23px}.stat .label{color:#7a879c;font-size:14px}.stat .value{font-size:35px;font-weight:800;margin-top:9px}
+    .stat:nth-child(1){border-top:4px solid #5676ed}.stat:nth-child(2){border-top:4px solid #f0ae55}.stat:nth-child(3){border-top:4px solid #30b58c}
+    .panel{padding:26px;margin-bottom:22px}.panel h2{margin:0 0 18px;font-size:20px}
+    .add-form{display:flex;gap:12px}.add-form input{flex:1;min-width:0;border:1px solid #dce4f1;background:#f9fbff;padding:15px 17px;border-radius:12px;outline:none}
+    .add-form input:focus{border-color:#617de8;box-shadow:0 0 0 3px #617de820}
+    .primary{border:0;background:#506fea;color:white;border-radius:12px;padding:13px 22px;font-weight:700}.primary:hover{background:#3e5cd0}
+    .progress-top{display:flex;justify-content:space-between;color:#697992;font-size:14px;margin-bottom:10px}
+    .progress-track{height:11px;background:#edf1f8;border-radius:20px;overflow:hidden}.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#5676ed,#31c6a0);transition:width .25s}
+    .section-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:15px}.section-header h2{margin:0}
+    .filters{display:flex;gap:7px;flex-wrap:wrap}.filter{border:1px solid #e2e8f3;background:white;color:#61718b;padding:8px 13px;border-radius:10px}.filter.active{background:#eaf0ff;color:#3e5fdb;border-color:#b8c9ff;font-weight:700}
+    ul{list-style:none;margin:0;padding:0}.task{display:flex;align-items:center;gap:12px;padding:17px 0;border-bottom:1px solid #edf0f6}.task:last-child{border-bottom:0}
+    .task-dot{width:12px;height:12px;border:2px solid #98a9c8;border-radius:50%;flex:none}.task.done .task-dot{background:#2db68a;border-color:#2db68a}
+    .task-title{flex:1;min-width:0;overflow-wrap:anywhere;font-weight:600}.task.done .task-title{text-decoration:line-through;color:#9aa6b8}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}.action{border:1px solid #dce5f3;background:#f8faff;color:#3d5bb0;border-radius:9px;padding:8px 11px}.action.delete{color:#c44856;background:#fff8f8;border-color:#f5dce0}
+    .empty{text-align:center;padding:36px 10px;color:#8190a7}.notice{min-height:22px;margin-top:12px;font-size:14px;color:#c44856}
+    @media(max-width:850px){.layout{grid-template-columns:1fr}aside{padding:18px 22px;gap:10px}.aside-foot{display:none}main{padding:26px 18px}.stats{gap:10px}.stat{padding:16px}.stat .value{font-size:27px}}
+    @media(max-width:560px){.stats{grid-template-columns:1fr}.add-form{flex-direction:column}.task{align-items:flex-start}.actions{flex-direction:column}.panel{padding:19px}}
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>VKU Task Manager</h1>
-    <p>DevOps Linux Project - Group 17</p>
-
-    <form class="form" id="taskForm">
-      <input id="title" placeholder="Nhap cong viec..." required>
-      <button type="submit">Them</button>
-    </form>
-
-    <ul id="taskList"></ul>
+  <div class="layout">
+    <aside>
+      <div class="brand">VKU <span>Tasks.</span></div>
+      <div class="nav">▦ &nbsp; Dashboard</div>
+      <div class="aside-foot">DEVOPS LINUX PROJECT<br>GROUP 17 · NODE.JS / EXPRESS</div>
+    </aside>
+    <main>
+      <div class="topline">Workspace / Dashboard</div>
+      <h1>Quản lý công việc ✨</h1>
+      <p class="subtitle">Theo dõi tiến độ và hoàn thành mục tiêu của bạn mỗi ngày.</p>
+      <section class="stats" aria-label="Thống kê">
+        <div class="stat"><div class="label">Tổng công việc</div><div class="value" id="total">0</div></div>
+        <div class="stat"><div class="label">Đang thực hiện</div><div class="value" id="pending">0</div></div>
+        <div class="stat"><div class="label">Đã hoàn thành</div><div class="value" id="completed">0</div></div>
+      </section>
+      <section class="panel">
+        <h2>Thêm công việc mới</h2>
+        <form id="taskForm" class="add-form">
+          <input id="title" type="text" maxlength="200" placeholder="Ví dụ: Hoàn thành báo cáo DevOps..." required aria-label="Tên công việc">
+          <button class="primary" type="submit">+ Thêm công việc</button>
+        </form>
+        <div class="notice" id="notice" role="status" aria-live="polite"></div>
+      </section>
+      <section class="panel">
+        <div class="progress-top"><span>Tiến độ hoàn thành</span><strong id="percent">0%</strong></div>
+        <div class="progress-track"><div class="progress-fill" id="progress"></div></div>
+      </section>
+      <section class="panel">
+        <div class="section-header">
+          <h2>Danh sách công việc</h2>
+          <div class="filters" aria-label="Lọc công việc">
+            <button class="filter active" type="button" data-filter="all">Tất cả</button>
+            <button class="filter" type="button" data-filter="pending">Đang làm</button>
+            <button class="filter" type="button" data-filter="done">Hoàn thành</button>
+          </div>
+        </div>
+        <ul id="taskList"></ul>
+      </section>
+    </main>
   </div>
-
   <script>
-    const API = "/api/tasks";
+    const API = '/api/tasks';
+    let tasks = [];
+    let currentFilter = 'all';
+    const notice = document.getElementById('notice');
 
-    async function loadTasks() {
-      const res = await fetch(API);
-      const tasks = await res.json();
-      const list = document.getElementById("taskList");
-      list.innerHTML = "";
-
-      tasks.forEach(task => {
-        const li = document.createElement("li");
-        const span = document.createElement("span");
-        span.textContent = task.title;
-
-        if (task.completed) span.className = "done";
-
-        const actions = document.createElement("div");
-
-        if (!task.completed) {
-          const completeBtn = document.createElement("button");
-          completeBtn.textContent = "Xong";
-          completeBtn.onclick = async () => {
-            await fetch(`${API}/${task.id}/complete`, {
-              method: "PATCH"
-            });
-            loadTasks();
-          };
-          actions.appendChild(completeBtn);
-        }
-
-        const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "Xoa";
-        deleteBtn.style.background = "#dc2626";
-        deleteBtn.style.marginLeft = "5px";
-        deleteBtn.onclick = async () => {
-          await fetch(`${API}/${task.id}`, {
-            method: "DELETE"
-          });
-          loadTasks();
-        };
-
-        actions.appendChild(deleteBtn);
-        li.append(span, actions);
-        list.appendChild(li);
-      });
+    async function request(url, options) {
+      const response = await fetch(url, options);
+      if (!response.ok) throw new Error('Yêu cầu thất bại (HTTP ' + response.status + ')');
+      return response.json();
     }
 
-    document.getElementById("taskForm").onsubmit = async (e) => {
-      e.preventDefault();
-      const input = document.getElementById("title");
+    function render() {
+      const total = tasks.length;
+      const completed = tasks.filter(task => task.completed).length;
+      const percent = total ? Math.round(completed * 100 / total) : 0;
+      document.getElementById('total').textContent = total;
+      document.getElementById('pending').textContent = total - completed;
+      document.getElementById('completed').textContent = completed;
+      document.getElementById('percent').textContent = percent + '%';
+      document.getElementById('progress').style.width = percent + '%';
 
-      await fetch(API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: input.value })
+      const visible = tasks.filter(task => currentFilter === 'all' || (currentFilter === 'done' ? task.completed : !task.completed));
+      const list = document.getElementById('taskList');
+      list.replaceChildren();
+      if (!visible.length) {
+        const empty = document.createElement('li');
+        empty.className = 'empty';
+        empty.textContent = 'Chưa có công việc nào trong mục này.';
+        list.appendChild(empty);
+        return;
+      }
+      for (const task of visible) {
+        const li = document.createElement('li');
+        li.className = 'task' + (task.completed ? ' done' : '');
+        const dot = document.createElement('span');
+        dot.className = 'task-dot';
+        const title = document.createElement('span');
+        title.className = 'task-title';
+        title.textContent = task.title;
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+        if (!task.completed) {
+          const complete = document.createElement('button');
+          complete.type = 'button';
+          complete.className = 'action';
+          complete.textContent = '✓ Hoàn thành';
+          complete.addEventListener('click', () => updateTask(task.id, 'PATCH', '/complete'));
+          actions.appendChild(complete);
+        }
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'action delete';
+        remove.textContent = 'Xóa';
+        remove.addEventListener('click', () => updateTask(task.id, 'DELETE', ''));
+        actions.appendChild(remove);
+        li.append(dot, title, actions);
+        list.appendChild(li);
+      }
+    }
+
+    async function loadTasks() {
+      try {
+        tasks = await request(API);
+        notice.textContent = '';
+        render();
+      } catch (error) { notice.textContent = 'Không thể tải công việc: ' + error.message; }
+    }
+
+    async function updateTask(id, method, suffix) {
+      try {
+        await request(API + '/' + encodeURIComponent(id) + suffix, { method });
+        await loadTasks();
+      } catch (error) { notice.textContent = error.message; }
+    }
+
+    document.getElementById('taskForm').addEventListener('submit', async event => {
+      event.preventDefault();
+      const input = document.getElementById('title');
+      const title = input.value.trim();
+      if (!title) return;
+      try {
+        await request(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title }) });
+        input.value = '';
+        await loadTasks();
+      } catch (error) { notice.textContent = error.message; }
+    });
+
+    document.querySelectorAll('[data-filter]').forEach(button => {
+      button.addEventListener('click', () => {
+        currentFilter = button.dataset.filter;
+        document.querySelectorAll('[data-filter]').forEach(item => item.classList.toggle('active', item === button));
+        render();
       });
-
-      input.value = "";
-      loadTasks();
-    };
-
+    });
     loadTasks();
   </script>
 </body>
