@@ -1,0 +1,15 @@
+# Copy thành .env:  cp .env.example .env
+# KHÔNG commit file .env lên GitHub.
+
+PORT=8000
+NODE_ENV=production
+HEALTH_PATH=/health
+
+# Ví dụ biến của app (đổi theo code của Ánh):
+# JWT_SECRET=doi-gia-tri-nay
+# DATABASE_URL=postgresql://user:password@db:5432/dbname
+
+# Nếu dùng service db trong docker-compose.yml:
+# DB_USER=
+# DB_PASSWORD=
+# DB_NAME=

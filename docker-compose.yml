@@ -1,0 +1,48 @@
+# docker-compose.yml - Chạy ứng dụng Node.js sau Nginx (Nginx cài trên host Ubuntu)
+#
+#   Internet -> UFW -> Nginx (host :80/:443) -> 127.0.0.1:8000 -> container :8000
+#
+# Lệnh: docker compose up -d --build
+
+services:
+  app:
+    build: .
+    image: myapp:latest
+    container_name: myapp
+    restart: unless-stopped
+    env_file:
+      - .env                       # KHÔNG commit file .env, chỉ commit .env.example
+    environment:
+      PORT: "8000"
+      NODE_ENV: production
+    ports:
+      # QUAN TRỌNG: bind vào 127.0.0.1 để Docker không bypass UFW,
+      # chỉ Nginx trên cùng máy mới truy cập được.
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:'+process.env.PORT+(process.env.HEALTH_PATH||'/health')).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ---- Nếu app dùng database, bỏ comment và chỉnh lại (ví dụ PostgreSQL) ----
+  # db:
+  #   image: postgres:16-alpine
+  #   container_name: myapp-db
+  #   restart: unless-stopped
+  #   environment:
+  #     POSTGRES_USER: ${DB_USER}
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
+  #     POSTGRES_DB: ${DB_NAME}
+  #   volumes:
+  #     - db_data:/var/lib/postgresql/data
+  #   # Không publish cổng DB ra ngoài; app gọi qua tên service "db:5432"
+  #
+  # volumes:
+  #   db_data:
