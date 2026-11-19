@@ -1,0 +1,20 @@
+# Node.js
+node_modules/
+coverage/
+*.log
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+id_rsa
+id_ed25519
+
+# Trivy database
+db/
+trivy.db
+
+# Backup files
+*.bak
